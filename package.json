@@ -1,0 +1,24 @@
+{
+  "name": "simple-notification-engine",
+  "version": "1.0.0",
+  "description": "App built using nodejs + hapi - helps to configure and create notifications",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ssriram83/simple-notification-engine.git"
+  },
+  "author": "Sriram",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ssriram83/simple-notification-engine/issues"
+  },
+  "homepage": "https://github.com/Ssriram83/simple-notification-engine#readme",
+  "dependencies": {
+    "boom": "^4.2.0",
+    "hapi": "^15.2.0",
+    "hapi-mongodb": "^6.2.0"
+  }
+}
