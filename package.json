@@ -17,8 +17,18 @@
   },
   "homepage": "https://github.com/Ssriram83/simple-notification-engine#readme",
   "dependencies": {
+    "agenda": "^0.9.0",
+    "agenda-ui": "0.0.7",
     "boom": "^4.2.0",
+    "code": "*",
+    "handlebars": "*",
     "hapi": "^15.2.0",
-    "hapi-mongodb": "^6.2.0"
+    "hapi-job-queue": "^0.5.0",
+    "hapi-mongodb": "^6.2.0",
+    "hapi-swagger": "^7.4.0",
+    "inert": "*",
+    "joi": "*",
+    "lout": "*",
+    "vision": "*"
   }
 }

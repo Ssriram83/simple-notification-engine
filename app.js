@@ -3,7 +3,6 @@
 const Hapi = require('hapi');
 const Inert = require('inert');
 const Vision = require('vision');
-// const Routes = require('./routes');
 const HapiSwagger = require('hapi-swagger');
 const Pack = require('./package');
 
@@ -28,8 +27,41 @@ var dbOpts = {
     }
 };
 
-server.method('emailUsers', function(data, done) {
-  server.plugins.emailService.spam(data.group, done);
+
+// Method to send Notification..
+server.method('sendNotifications', function(data, done) {
+    // Fetch list of interested users for data.notification_id
+    var db = request.server.plugins['hapi-mongodb'].db;
+    var notification_id = data.notification_id;
+    var ObjectID = request.server.plugins['hapi-mongodb'].ObjectID;
+
+    db.collection('notifications').findOne({  "notifiation_id" : new ObjectID(request.params.notification_id) },function(err, result) {
+        if (err) return reply(Boom.internal('Internal MongoDB error', err));
+        var topic = result.topic;
+        // Fetch list of interested users for a topic
+        // TOPONDER: Is there a better way to query from multiple collections in mongo? 
+        db.collection('user_details').find({"topics": {"$in":[topic]}}).toArray((err, result)=>{
+           if (err) return reply(Boom.internal('Internal MongoDB error', err));
+           // for each user: send email or send online notification
+            result.forEach(function(user) {
+                // TODO: implement send email using hapi-mail.. 
+                console.log("Sending Notification For User");
+                // TODO: Need to store date for each of the status.. 
+                var notification_detail = {
+                    "notification_id":notification_id,
+                    "user_id": user.id,
+                    "delivery_status":1,
+                    "read:status":0,
+                    "archive_status":0
+                }
+                // Delivery notification table
+                db.collection('notification_delivery_status').insertOne(notification_detail,(err,result)=>{
+                   if (err) return reply(Boom.internal('Internal MongoDB error', err));
+                    done(result);
+                })
+            });
+        })
+    }); 
 });
 
 
@@ -50,24 +82,18 @@ const swagger = {
     const JobSchedulerPlugin = {
         'register':JobScheduler,
         'options':{
-
             connectionUrl: mongoUrl,
             endpoint: '/jobs',
             jobs:[]
-        
-
     }
 }
 
 server.register([Vision, Inert, swagger, mongodb,JobSchedulerPlugin,require('./plugins/notifications'),require('./plugins/user-details'), require('./plugins/notification-delivery')], function(err) {
-
     if (err) {
         console.log(err);
         console.error('Failed loading plugins');
         process.exit(1);
     }
-
-    // server.route(Routes);
     server.route({
       method: 'GET',
       path: '/app/{param*}',
